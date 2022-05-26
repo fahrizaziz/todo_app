@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:todo_apps/model/todo.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({Key? key}) : super(key: key);
@@ -8,7 +9,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  bool varS = true;
+  List<Todo> todos = dataTodo;
   @override
   Widget build(BuildContext context) {
     AppBar myAppbar = AppBar(
@@ -45,26 +46,40 @@ class _HomePageState extends State<HomePage> {
               height: heightBody * 0.85,
               width: widhtBody,
               child: ListView.builder(
-                itemCount: 10,
+                itemCount: todos.length,
                 itemBuilder: (context, index) {
+                  final todo = todos[index];
                   return CheckboxListTile(
                     secondary: IconButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        setState(() {
+                          todos.removeAt(index);
+                        });
+                      },
                       icon: const Icon(
                         Icons.delete,
                         color: Colors.red,
                       ),
                     ),
                     controlAffinity: ListTileControlAffinity.leading,
-                    value: varS,
-                    onChanged: (value) {},
-                    title: const Text(
-                      'Title',
+                    value: todo.isCompleted,
+                    onChanged: (value) {
+                      setState(() {
+                        todo.isCompleted = value!;
+                      });
+                    },
+                    title: Text(
+                      todo.title,
                       style: TextStyle(
                         fontSize: 18,
+                        decoration: todo.isCompleted
+                            ? TextDecoration.lineThrough
+                            : TextDecoration.none,
                       ),
                     ),
-                    subtitle: const Text('Subtitle'),
+                    subtitle: Text(
+                      todo.desc,
+                    ),
                   );
                 },
               ),
