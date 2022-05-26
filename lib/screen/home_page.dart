@@ -10,6 +10,18 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   List<Todo> todos = dataTodo;
+  // Function search
+  void searchTodo(String query) {
+    final todoFilter = dataTodo.where((todo) {
+      final todoTitle = todo.title.toLowerCase();
+      final input = query.toLowerCase();
+      return todoTitle.contains(input);
+    }).toList();
+    setState(() {
+      todos = todoFilter;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     AppBar myAppbar = AppBar(
@@ -22,6 +34,7 @@ class _HomePageState extends State<HomePage> {
         myAppbar.preferredSize.height -
         MediaQuery.of(context).padding.top;
     double widhtBody = MediaQuery.of(context).size.width;
+
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: myAppbar,
@@ -30,8 +43,9 @@ class _HomePageState extends State<HomePage> {
           children: [
             Container(
               padding: const EdgeInsets.all(20),
-              child: const TextField(
-                decoration: InputDecoration(
+              child: TextField(
+                onChanged: searchTodo,
+                decoration: const InputDecoration(
                   border: OutlineInputBorder(),
                   prefixIcon: Icon(
                     Icons.search,
@@ -42,48 +56,52 @@ class _HomePageState extends State<HomePage> {
               width: widhtBody,
               height: heightBody * 0.15,
             ),
-            SizedBox(
-              height: heightBody * 0.85,
-              width: widhtBody,
-              child: ListView.builder(
-                itemCount: todos.length,
-                itemBuilder: (context, index) {
-                  final todo = todos[index];
-                  return CheckboxListTile(
-                    secondary: IconButton(
-                      onPressed: () {
-                        setState(() {
-                          todos.removeAt(index);
-                        });
+            todos.length != 0
+                ? SizedBox(
+                    height: heightBody * 0.85,
+                    width: widhtBody,
+                    child: ListView.builder(
+                      itemCount: todos.length,
+                      itemBuilder: (context, index) {
+                        final todo = todos[index];
+                        return CheckboxListTile(
+                          secondary: IconButton(
+                            onPressed: () {
+                              setState(() {
+                                todos.removeAt(index);
+                              });
+                            },
+                            icon: const Icon(
+                              Icons.delete,
+                              color: Colors.red,
+                            ),
+                          ),
+                          controlAffinity: ListTileControlAffinity.leading,
+                          value: todo.isCompleted,
+                          onChanged: (value) {
+                            setState(() {
+                              todo.isCompleted = value!;
+                            });
+                          },
+                          title: Text(
+                            todo.title,
+                            style: TextStyle(
+                              fontSize: 18,
+                              decoration: todo.isCompleted
+                                  ? TextDecoration.lineThrough
+                                  : TextDecoration.none,
+                            ),
+                          ),
+                          subtitle: Text(
+                            todo.desc,
+                          ),
+                        );
                       },
-                      icon: const Icon(
-                        Icons.delete,
-                        color: Colors.red,
-                      ),
                     ),
-                    controlAffinity: ListTileControlAffinity.leading,
-                    value: todo.isCompleted,
-                    onChanged: (value) {
-                      setState(() {
-                        todo.isCompleted = value!;
-                      });
-                    },
-                    title: Text(
-                      todo.title,
-                      style: TextStyle(
-                        fontSize: 18,
-                        decoration: todo.isCompleted
-                            ? TextDecoration.lineThrough
-                            : TextDecoration.none,
-                      ),
-                    ),
-                    subtitle: Text(
-                      todo.desc,
-                    ),
-                  );
-                },
-              ),
-            )
+                  )
+                : const Text(
+                    'Data Kosong',
+                  ),
           ],
         ),
       ),
