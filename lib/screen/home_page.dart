@@ -36,6 +36,14 @@ class _HomePageState extends State<HomePage> {
     double widhtBody = MediaQuery.of(context).size.width;
 
     return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.pushNamed(context, 'add_todo');
+        },
+        child: const Icon(
+          Icons.add,
+        ),
+      ),
       resizeToAvoidBottomInset: false,
       appBar: myAppbar,
       body: SafeArea(
@@ -56,7 +64,7 @@ class _HomePageState extends State<HomePage> {
               width: widhtBody,
               height: heightBody * 0.15,
             ),
-            todos.length != 0
+            todos.isNotEmpty
                 ? SizedBox(
                     height: heightBody * 0.85,
                     width: widhtBody,
